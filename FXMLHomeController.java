@@ -93,6 +93,7 @@ public class FXMLHomeController implements Initializable {
         }
     }
 
+    // Bug com as threads e atualização da exibição do número da distância total
     @FXML
     void initStop(ActionEvent event) {
         if(executePath == false){
@@ -146,7 +147,7 @@ public class FXMLHomeController implements Initializable {
     }
 
 
-    //Algoritmos de troca de cidade
+    //Algoritmos genéticos de troca de cidade 
 
     public void execute(){
         while(executePath){
