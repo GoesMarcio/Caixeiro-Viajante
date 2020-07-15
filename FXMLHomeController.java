@@ -17,6 +17,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import java.text.DecimalFormat;
 import javafx.scene.paint.Color;
+import javafx.scene.control.SplitPane;
 
 public class FXMLHomeController implements Initializable {
 
@@ -37,6 +38,9 @@ public class FXMLHomeController implements Initializable {
     private Canvas canvasPoints;
 
     @FXML
+    private SplitPane split;
+
+    @FXML
     private MenuItem menuClose;
 
     @FXML
@@ -55,6 +59,7 @@ public class FXMLHomeController implements Initializable {
         it = 0;
         itMAX = 100000;
         executePath = false;
+        
         gc = canvas.getGraphicsContext2D();
     }
 

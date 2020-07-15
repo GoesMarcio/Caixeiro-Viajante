@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
+<?import javafx.scene.effect.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.control.*?>
@@ -8,29 +10,8 @@
 <?import javafx.scene.layout.*?>
 
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="FXMLHomeController">
+<AnchorPane maxHeight="422.0" maxWidth="600.0" minHeight="422.0" minWidth="600.0" prefHeight="4220.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="FXMLHomeController">
    <children>
-      <Pane layoutY="25.0" prefHeight="375.0" prefWidth="600.0">
-         <children>
-            <SplitPane dividerPositions="0.7575250836120402" layoutX="-1.0" layoutY="-1.0" prefHeight="377.0" prefWidth="602.0">
-               <items>
-                  <Pane prefHeight="375.0" prefWidth="450.0">
-                     <children>
-                        <Canvas fx:id="canvas" height="365.0" layoutX="6.0" layoutY="5.0" width="440.0" />
-                        <Canvas fx:id="canvasPoints" height="365.0" layoutX="6.0" layoutY="5.0" width="440.0" />
-                     </children>
-                  </Pane>
-                  <Pane prefHeight="200.0" prefWidth="200.0">
-                     <children>
-                        <Button fx:id="initStop" layoutX="47.0" layoutY="224.0" mnemonicParsing="false" onAction="#initStop" text="Iniciar" />
-                        <Label layoutX="32.0" layoutY="120.0" text="Distância total:" />
-                        <Label fx:id="distance" alignment="CENTER" contentDisplay="CENTER" layoutY="137.0" prefHeight="17.0" prefWidth="142.0" text="0 km" textAlignment="CENTER" />
-                     </children>
-                  </Pane>
-               </items>
-            </SplitPane>
-         </children>
-      </Pane>
       <MenuBar prefHeight="25.0" prefWidth="600.0">
         <menus>
           <Menu mnemonicParsing="false" text="Arquivo">
@@ -51,5 +32,36 @@
           </Menu>
         </menus>
       </MenuBar>
+      <Pane layoutY="25.0" prefHeight="375.0" prefWidth="600.0">
+         <children>
+            <HBox prefHeight="375.0" prefWidth="600.0">
+               <children>
+                  <Pane prefHeight="375.0" prefWidth="510.0">
+                     <children>
+                        <Canvas fx:id="canvas" height="365.0" layoutX="6.0" layoutY="5.0" width="440.0" />
+                        <Canvas fx:id="canvasPoints" height="365.0" layoutX="6.0" layoutY="5.0" width="440.0" />
+                        <Separator layoutY="375.0" prefHeight="3.0" prefWidth="600.0" />
+                     </children>
+                  </Pane>
+                  <Separator orientation="VERTICAL" prefHeight="200.0" />
+                  <Pane prefHeight="200.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="initStop" layoutX="47.0" layoutY="224.0" mnemonicParsing="false" onAction="#initStop" text="Iniciar" />
+                        <Label layoutX="32.0" layoutY="120.0" text="Distância total:" />
+                        <Label fx:id="distance" alignment="CENTER" contentDisplay="CENTER" layoutY="137.0" prefHeight="17.0" prefWidth="142.0" text="0 km" textAlignment="CENTER" />
+                     </children>
+                  </Pane>
+               </children>
+            </HBox>
+         </children>
+      </Pane>
+      <HBox layoutY="400.0" prefHeight="17.0" prefWidth="602.0" spacing="5.0">
+         <children>
+            <Label prefHeight="17.0" prefWidth="102.0" text="Status: Parado" textFill="#9f9f9f" />
+         </children>
+         <padding>
+            <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+         </padding>
+      </HBox>
    </children>
 </AnchorPane>

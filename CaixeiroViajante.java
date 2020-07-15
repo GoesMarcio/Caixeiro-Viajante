@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import java.lang.Exception;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.scene.image.Image;
 
 public class CaixeiroViajante extends Application {
     
@@ -16,6 +17,9 @@ public class CaixeiroViajante extends Application {
             Scene scene = new Scene(root);
             stage.setScene(scene);
             //stage.initStyle(StageStyle.UNDECORATED);
+            stage.getIcons().add(new Image(this.getClass().getResourceAsStream("assets/icon.png")));
+            stage.setTitle("Caixeiro Viajante");
+            //stage.setResizable(false);
             stage.show();
         }catch(Exception e){
             System.out.println("Erro ao iniciar programa");
