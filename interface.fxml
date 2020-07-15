@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.canvas.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="FXMLHomeController">
+   <children>
+      <Pane layoutY="25.0" prefHeight="375.0" prefWidth="600.0">
+         <children>
+            <SplitPane dividerPositions="0.7575250836120402" layoutX="-1.0" layoutY="-1.0" prefHeight="377.0" prefWidth="602.0">
+               <items>
+                  <Pane prefHeight="375.0" prefWidth="450.0">
+                     <children>
+                        <Canvas fx:id="canvas" height="365.0" layoutX="6.0" layoutY="5.0" width="440.0" />
+                        <Canvas fx:id="canvasPoints" height="365.0" layoutX="6.0" layoutY="5.0" width="440.0" />
+                     </children>
+                  </Pane>
+                  <Pane prefHeight="200.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="initStop" layoutX="47.0" layoutY="224.0" mnemonicParsing="false" onAction="#initStop" text="Iniciar" />
+                        <Label layoutX="32.0" layoutY="120.0" text="Distância total:" />
+                        <Label fx:id="distance" alignment="CENTER" contentDisplay="CENTER" layoutY="137.0" prefHeight="17.0" prefWidth="142.0" text="0 km" textAlignment="CENTER" />
+                     </children>
+                  </Pane>
+               </items>
+            </SplitPane>
+         </children>
+      </Pane>
+      <MenuBar prefHeight="25.0" prefWidth="600.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="Arquivo">
+            <items>
+                  <MenuItem fx:id="menuLoad" mnemonicParsing="false" onAction="#loadCities" text="Carregar cidades" />
+              <MenuItem fx:id="menuClose" mnemonicParsing="false" onAction="#close" text="Fechar" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Edit">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Delete" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem mnemonicParsing="false" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </children>
+</AnchorPane>
