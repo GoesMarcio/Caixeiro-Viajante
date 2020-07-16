@@ -18,6 +18,17 @@ import javafx.scene.control.Label;
 import java.text.DecimalFormat;
 import javafx.scene.paint.Color;
 import javafx.scene.control.SplitPane;
+import javafx.util.Duration;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
+import javafx.scene.layout.Pane;
+import javafx.scene.input.ScrollEvent;
+import javafx.event.EventHandler;
+import javafx.scene.text.Font;
+import javafx.scene.transform.Scale;
+import javafx.scene.control.CheckBox;
 
 public class FXMLHomeController implements Initializable {
 
@@ -33,6 +44,9 @@ public class FXMLHomeController implements Initializable {
 
     @FXML
     private Canvas canvas;
+
+    @FXML
+    private Pane zoomId;
 
     @FXML
     private Canvas canvasPoints;
@@ -52,15 +66,68 @@ public class FXMLHomeController implements Initializable {
     @FXML
     private Label distance;
 
-    private GraphicsContext gc;
+    @FXML
+    private Label status;
+
+    @FXML
+    private Label loading;
+
+    @FXML
+    private CheckBox checkPointsId;
+
+    @FXML
+    private CheckBox checkPathId;
+
+    private GraphicsContext gc, gc2;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         it = 0;
-        itMAX = 100000;
+        itMAX = 10000;
         executePath = false;
         
         gc = canvas.getGraphicsContext2D();
+        gc2 = canvasPoints.getGraphicsContext2D();
+        gc.setStroke(Color.web("#000000",0.8));
+        
+        // zoomId.setOnScroll(event -> {
+        //     if(cidades != null){
+                
+                
+        //             double facZoom = event.getDeltaY()/1000;
+        //             gc.scale(1 + facZoom, 1 + facZoom);
+        //             gc2.scale(1 + facZoom, 1 + facZoom);
+                
+        //             gc.clearRect(0, 0, 586, 457);
+        //             gc2.clearRect(0, 0, 586, 457);
+                
+        //         //System.out.println(event.getY());
+        //         draw();
+        //         drawPoints();
+        //     }
+        // });
+
+        zoomId.setOnScroll(event -> {       
+            double zoom_fac = 1.05;
+            double delta_y = event.getDeltaY();
+
+            if(delta_y < 0) {
+                zoom_fac = 2.0 - zoom_fac;
+            }
+
+            Scale newScale = new Scale();
+            newScale.setPivotX(event.getX());
+            newScale.setPivotY(event.getY());
+            newScale.setX(canvas.getScaleX() * zoom_fac );
+            newScale.setY(canvas.getScaleY() * zoom_fac );
+
+            gc.scale(newScale.getX(), newScale.getY());
+            draw();
+            drawPoints();
+
+            event.consume();
+        });
+        
     }
 
     @FXML
@@ -89,6 +156,7 @@ public class FXMLHomeController implements Initializable {
                 //melhorCaso = distanciaTotal(cidades);
                 sc.close();
                 bestCase = distanciaTotal(cidades);
+                loading.setText("");
                 draw();
                 drawPoints();
 
@@ -101,9 +169,19 @@ public class FXMLHomeController implements Initializable {
     // Bug com as threads e atualização da exibição do número da distância total
     @FXML
     void initStop(ActionEvent event) {
+        if(cidades == null) return;
         if(executePath == false){
             executePath = true;
-            System.out.println("aaaa");
+            status.setText("Status: Executando...");
+
+            Timeline timeline = new Timeline(
+                new KeyFrame(Duration.seconds(0), new KeyValue(status.textFillProperty(), Color.web("#9f9f9f"))),
+                new KeyFrame(Duration.seconds(1), new KeyValue(status.textFillProperty(), Color.GREEN))
+            );
+            timeline.setAutoReverse(true);
+            timeline.setCycleCount(Animation.INDEFINITE);
+            timeline.play();
+
             th = new Thread(
                     new Runnable() {
                         @Override
@@ -116,7 +194,15 @@ public class FXMLHomeController implements Initializable {
             th.start();
         }else{
             executePath = false;
-            System.out.println("bbbb");
+            status.setText("Status: Parado");
+            Timeline timeline = new Timeline(
+                new KeyFrame(Duration.seconds(0), new KeyValue(status.textFillProperty(), Color.web("#9f9f9f"))),
+                new KeyFrame(Duration.seconds(0), new KeyValue(status.textFillProperty(), Color.web("#9f9f9f")))
+            );
+            timeline.setAutoReverse(true);
+            timeline.setCycleCount(Animation.INDEFINITE);
+            timeline.play();
+            th.interrupt();
         }
     }
 
@@ -126,25 +212,43 @@ public class FXMLHomeController implements Initializable {
         System.exit(0);
     }
 
-    public void draw(){
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        gc.setLineWidth(1.0);
-        gc.beginPath();
-        gc.moveTo(cidades[0].getX()/maxX * canvas.getWidth(), cidades[0].getY()/maxY * canvas.getHeight());
-        for(int i = 1; i<cidades.length; i++){
-            gc.lineTo(cidades[i].getX()/maxX * canvas.getWidth(), cidades[i].getY()/maxY * canvas.getHeight());
-        }
-        gc.lineTo(cidades[0].getX()/maxX * canvas.getWidth(), cidades[0].getY()/maxY * canvas.getHeight());
-        gc.stroke();
+    @FXML
+    void checkPoints(ActionEvent event) {
+            drawPoints();
+    }
 
-        DecimalFormat df = new DecimalFormat("#.00");
-        distance.setText(df.format(bestCase) + " km");
-        System.out.println(bestCase);
+    @FXML
+    void checkPath(ActionEvent event) {
+            draw();
+    }
+
+    public void draw(){
+        Platform.runLater(()->{
+            gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+            System.out.println(canvas.getWidth());
+            gc.setLineWidth(0.8);
+
+            if(checkPathId.isSelected()){
+                gc.beginPath();
+                gc.moveTo(cidades[0].getX()/maxX * canvas.getWidth(), cidades[0].getY()/maxY * canvas.getHeight());
+                for(int i = 1; i<cidades.length; i++){
+                    gc.lineTo(cidades[i].getX()/maxX * canvas.getWidth(), cidades[i].getY()/maxY * canvas.getHeight());
+                }
+                gc.lineTo(cidades[0].getX()/maxX * canvas.getWidth(), cidades[0].getY()/maxY * canvas.getHeight());
+                gc.stroke();
+            }
+            DecimalFormat df = new DecimalFormat("#.00");
+            distance.setText(df.format(bestCase) + " km");
+        });
+
+        //System.out.println(bestCase);
     }
 
     public void drawPoints(){
-        GraphicsContext gc2 = canvasPoints.getGraphicsContext2D();
         gc2.clearRect(0, 0, canvasPoints.getWidth(), canvasPoints.getHeight());
+
+        if(!checkPointsId.isSelected()) return;
+
         gc2.setFill(Color.GREEN);
         for(int i = 0; i<cidades.length; i++){
             gc2.fillOval(cidades[i].getX()/maxX * canvas.getWidth(), cidades[i].getY()/maxY * canvas.getHeight(), 2, 2);

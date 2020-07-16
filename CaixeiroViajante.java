@@ -21,6 +21,7 @@ public class CaixeiroViajante extends Application {
             stage.setTitle("Caixeiro Viajante");
             //stage.setResizable(false);
             stage.show();
+            stage.setOnCloseRequest(e -> System.exit(0));
         }catch(Exception e){
             System.out.println("Erro ao iniciar programa");
         }
