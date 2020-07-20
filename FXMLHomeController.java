@@ -27,8 +27,9 @@ import javafx.scene.layout.Pane;
 import javafx.scene.input.ScrollEvent;
 import javafx.event.EventHandler;
 import javafx.scene.text.Font;
-import javafx.scene.transform.Scale;
 import javafx.scene.control.CheckBox;
+import javafx.scene.transform.Affine;
+import javafx.geometry.Point2D;
 
 public class FXMLHomeController implements Initializable {
 
@@ -37,10 +38,13 @@ public class FXMLHomeController implements Initializable {
     private Random rand = new Random();
 
     private double maxX, maxY = 0.0;
+    private double factorZoom;
     private double bestCase = 0;
     private int it, itMAX;
     private boolean executePath;
     private Thread th;
+
+    private double orgX, orgY;
 
     @FXML
     private Canvas canvas;
@@ -85,48 +89,66 @@ public class FXMLHomeController implements Initializable {
         it = 0;
         itMAX = 10000;
         executePath = false;
+        factorZoom = 1.0;
         
         gc = canvas.getGraphicsContext2D();
         gc2 = canvasPoints.getGraphicsContext2D();
         gc.setStroke(Color.web("#000000",0.8));
-        
-        // zoomId.setOnScroll(event -> {
-        //     if(cidades != null){
-                
-                
-        //             double facZoom = event.getDeltaY()/1000;
-        //             gc.scale(1 + facZoom, 1 + facZoom);
-        //             gc2.scale(1 + facZoom, 1 + facZoom);
-                
-        //             gc.clearRect(0, 0, 586, 457);
-        //             gc2.clearRect(0, 0, 586, 457);
-                
-        //         //System.out.println(event.getY());
-        //         draw();
-        //         drawPoints();
-        //     }
-        // });
+        gc.setLineWidth(0.8);
 
-        zoomId.setOnScroll(event -> {       
-            double zoom_fac = 1.05;
-            double delta_y = event.getDeltaY();
+        zoomId.setOnScroll(event -> {
+            if(cidades == null) return;
 
-            if(delta_y < 0) {
-                zoom_fac = 2.0 - zoom_fac;
+            Affine transform = gc.getTransform();
+
+            double delta = 1.1;
+            double scale = canvas.getScaleX(); // currently we only use Y, same value is used for X
+
+            if (event.getDeltaY() < 0){
+                if(transform.getMxx() < 0.5) return;
+                scale /= delta;
+                factorZoom -= 0.1;
+            }else{
+                if(transform.getMxx() > 4) return;
+                scale *= delta;
+                factorZoom += 0.1;
             }
+            
+            clearCanvas();
 
-            Scale newScale = new Scale();
-            newScale.setPivotX(event.getX());
-            newScale.setPivotY(event.getY());
-            newScale.setX(canvas.getScaleX() * zoom_fac );
-            newScale.setY(canvas.getScaleY() * zoom_fac );
-
-            gc.scale(newScale.getX(), newScale.getY());
+            transform.appendScale(scale, scale, new Point2D(event.getX(), event.getY()));
+            clearCanvas();
+            gc.setTransform(transform);
+            gc2.setTransform(transform);
+            
             draw();
             drawPoints();
 
             event.consume();
         });
+
+        zoomId.setOnMousePressed((event) -> {
+            orgX = event.getSceneX();
+            orgY = event.getSceneY();
+        });
+        zoomId.setOnMouseDragged(event -> {
+            if(cidades == null) return;
+            double changeInX = event.getSceneX() - orgX;
+            double changeInY = event.getSceneY() - orgY;
+
+            Affine transform = gc.getTransform();
+            transform.appendTranslation(changeInX, changeInY);
+            clearCanvas();
+            gc.setTransform(transform);
+            gc2.setTransform(transform);
+
+            draw();
+            drawPoints();
+
+            orgX = event.getSceneX();
+            orgY = event.getSceneY();
+        });
+        
         
     }
 
@@ -157,6 +179,7 @@ public class FXMLHomeController implements Initializable {
                 sc.close();
                 bestCase = distanciaTotal(cidades);
                 loading.setText("");
+                clearCanvas();
                 draw();
                 drawPoints();
 
@@ -207,27 +230,30 @@ public class FXMLHomeController implements Initializable {
     }
 
     @FXML
-    void close(ActionEvent event) {
+    void close(ActionEvent event){
         Platform.exit();
         System.exit(0);
     }
 
     @FXML
-    void checkPoints(ActionEvent event) {
-            drawPoints();
+    void checkPoints(ActionEvent event){
+        gc2.clearRect(-10, -10, canvas.getWidth() + 20, canvas.getHeight() + 20);
+        drawPoints();
     }
 
     @FXML
-    void checkPath(ActionEvent event) {
-            draw();
+    void checkPath(ActionEvent event){
+        gc.clearRect(-10, -10, canvas.getWidth() + 20, canvas.getHeight() + 20);
+        draw();
+    }
+
+    public void clearCanvas(){
+        gc.clearRect(-20, -20, canvas.getWidth() + 20, canvas.getHeight() + 20);
+        gc2.clearRect(-10, -10, canvas.getWidth() + 20, canvas.getHeight() + 20);
     }
 
     public void draw(){
         Platform.runLater(()->{
-            gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-            System.out.println(canvas.getWidth());
-            gc.setLineWidth(0.8);
-
             if(checkPathId.isSelected()){
                 gc.beginPath();
                 gc.moveTo(cidades[0].getX()/maxX * canvas.getWidth(), cidades[0].getY()/maxY * canvas.getHeight());
@@ -245,13 +271,11 @@ public class FXMLHomeController implements Initializable {
     }
 
     public void drawPoints(){
-        gc2.clearRect(0, 0, canvasPoints.getWidth(), canvasPoints.getHeight());
-
         if(!checkPointsId.isSelected()) return;
 
         gc2.setFill(Color.GREEN);
         for(int i = 0; i<cidades.length; i++){
-            gc2.fillOval(cidades[i].getX()/maxX * canvas.getWidth(), cidades[i].getY()/maxY * canvas.getHeight(), 2, 2);
+            gc2.fillOval((cidades[i].getX()/maxX * canvas.getWidth()) - 1, (cidades[i].getY()/maxY * canvas.getHeight()) - 1, 2, 2);
         }
     }
 
@@ -271,6 +295,7 @@ public class FXMLHomeController implements Initializable {
             }
             if(it > itMAX){
                 it = 0;
+                gc.clearRect(-20, -20, canvas.getWidth() + 20, canvas.getHeight() + 20);
                 draw();
             }
         }
