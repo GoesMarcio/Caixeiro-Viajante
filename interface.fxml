@@ -51,9 +51,12 @@
             <Separator orientation="VERTICAL" prefHeight="200.0" />
             <Pane>
                <children>
-                  <Button fx:id="initStop" layoutX="47.0" layoutY="308.0" mnemonicParsing="false" onAction="#initStop" text="Iniciar" />
-                  <Label layoutX="32.0" layoutY="202.0" text="Distância total:" />
-                  <Label fx:id="distance" alignment="CENTER" contentDisplay="CENTER" layoutY="219.0" prefHeight="17.0" prefWidth="142.0" text="0 km" textAlignment="CENTER" />
+                  <Button fx:id="initStop" layoutX="47.0" layoutY="423.0" mnemonicParsing="false" onAction="#initStop" style="-fx-background-color: rgb(147, 202, 0); -fx-text-fill: #fff; -fx-border-color: rgb(147, 202, 0); -fx-cursor: HAND;" text="Iniciar">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></Button>
+                  <Label layoutX="32.0" layoutY="373.0" text="Distância total:" />
+                  <Label fx:id="distance" alignment="CENTER" contentDisplay="CENTER" layoutY="390.0" prefHeight="17.0" prefWidth="142.0" text="0 km" textAlignment="CENTER" />
                   <CheckBox fx:id="checkPointsId" layoutX="13.0" layoutY="21.0" mnemonicParsing="false" onAction="#checkPoints" selected="true" text="Pontos" />
                   <CheckBox fx:id="checkPathId" layoutX="13.0" layoutY="48.0" mnemonicParsing="false" onAction="#checkPath" selected="true" text="Caminho" />
                   <Slider fx:id="scaleId" blockIncrement="3.0" disable="true" layoutX="12.0" layoutY="113.0" majorTickUnit="1.0" max="4.0" min="0.5" minorTickCount="2" onMouseDragged="#setScale" prefHeight="14.0" prefWidth="117.0" showTickLabels="true" showTickMarks="true" value="1.0" />

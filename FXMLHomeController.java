@@ -40,7 +40,6 @@ public class FXMLHomeController implements Initializable {
     private Random rand = new Random();
 
     private double maxX, maxY = 0.0;
-    private double factorZoom;
     private double bestCase = 0;
     private int it, itMAX;
     private boolean executePath;
@@ -82,7 +81,6 @@ public class FXMLHomeController implements Initializable {
         it = 0;
         itMAX = 10000;
         executePath = false;
-        factorZoom = 1.0;
         
         gc = canvas.getGraphicsContext2D();
         gc2 = canvasPoints.getGraphicsContext2D();
@@ -190,6 +188,8 @@ public class FXMLHomeController implements Initializable {
         if(executePath == false){
             executePath = true;
             status.setText("Status: Executando...");
+            initStop.setText("Parar");
+            initStop.setStyle("-fx-background-color: rgb(202, 40, 0); -fx-text-fill: #fff; -fx-border-color: rgb(202, 40, 0);");
 
             Timeline timeline = new Timeline(
                 new KeyFrame(Duration.seconds(0), new KeyValue(status.textFillProperty(), Color.web("#9f9f9f"))),
@@ -212,6 +212,8 @@ public class FXMLHomeController implements Initializable {
         }else{
             executePath = false;
             status.setText("Status: Parado");
+            initStop.setText("Iniciar");
+            initStop.setStyle("-fx-background-color: rgb(147, 202, 0); -fx-text-fill: #fff; -fx-border-color: rgb(147, 202, 0);");
             Timeline timeline = new Timeline(
                 new KeyFrame(Duration.seconds(0), new KeyValue(status.textFillProperty(), Color.web("#9f9f9f"))),
                 new KeyFrame(Duration.seconds(0), new KeyValue(status.textFillProperty(), Color.web("#9f9f9f")))
