@@ -2,6 +2,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.fxml.Initializable;
 import javafx.fxml.FXML;
 import java.util.Random;
@@ -30,6 +31,7 @@ import javafx.scene.text.Font;
 import javafx.scene.control.CheckBox;
 import javafx.scene.transform.Affine;
 import javafx.geometry.Point2D;
+import javafx.scene.control.Slider;
 
 public class FXMLHomeController implements Initializable {
 
@@ -48,39 +50,30 @@ public class FXMLHomeController implements Initializable {
 
     @FXML
     private Canvas canvas;
-
     @FXML
     private Pane zoomId;
-
     @FXML
     private Canvas canvasPoints;
-
     @FXML
     private SplitPane split;
-
     @FXML
     private MenuItem menuClose;
-
     @FXML
     private MenuItem menuLoad;
-
     @FXML
     private Button initStop;
-
     @FXML
     private Label distance;
-
     @FXML
     private Label status;
-
     @FXML
     private Label loading;
-
     @FXML
     private CheckBox checkPointsId;
-
     @FXML
     private CheckBox checkPathId;
+    @FXML
+    private Slider scaleId;
 
     private GraphicsContext gc, gc2;
 
@@ -101,17 +94,14 @@ public class FXMLHomeController implements Initializable {
 
             Affine transform = gc.getTransform();
 
-            double delta = 1.1;
             double scale = canvas.getScaleX(); // currently we only use Y, same value is used for X
 
             if (event.getDeltaY() < 0){
+                scale = 0.9;
                 if(transform.getMxx() < 0.5) return;
-                scale /= delta;
-                factorZoom -= 0.1;
             }else{
+                scale = 1.1;
                 if(transform.getMxx() > 4) return;
-                scale *= delta;
-                factorZoom += 0.1;
             }
             
             clearCanvas();
@@ -120,6 +110,7 @@ public class FXMLHomeController implements Initializable {
             clearCanvas();
             gc.setTransform(transform);
             gc2.setTransform(transform);
+            scaleId.setValue(transform.getMxx());
             
             draw();
             drawPoints();
@@ -178,7 +169,10 @@ public class FXMLHomeController implements Initializable {
                 //melhorCaso = distanciaTotal(cidades);
                 sc.close();
                 bestCase = distanciaTotal(cidades);
-                loading.setText("");
+                Platform.runLater(()->{
+                    loading.setText("");
+                    scaleId.setDisable(false);
+                });
                 clearCanvas();
                 draw();
                 drawPoints();
@@ -247,12 +241,27 @@ public class FXMLHomeController implements Initializable {
         draw();
     }
 
+    @FXML
+    void setScale(MouseEvent event) {
+        //System.out.println(scaleId.valueProperty().doubleValue());
+        Affine transform = gc.getTransform();
+        transform.setMxx(scaleId.valueProperty().doubleValue());
+        transform.setMyy(scaleId.valueProperty().doubleValue());
+        clearCanvas();
+        gc.setTransform(transform);
+        gc2.setTransform(transform);
+        
+        draw();
+        drawPoints();
+    }
+
     public void clearCanvas(){
         gc.clearRect(-20, -20, canvas.getWidth() + 20, canvas.getHeight() + 20);
         gc2.clearRect(-10, -10, canvas.getWidth() + 20, canvas.getHeight() + 20);
     }
 
     public void draw(){
+        if(cidades == null) return;
         Platform.runLater(()->{
             if(checkPathId.isSelected()){
                 gc.beginPath();
@@ -271,6 +280,7 @@ public class FXMLHomeController implements Initializable {
     }
 
     public void drawPoints(){
+        if(cidades == null) return;
         if(!checkPointsId.isSelected()) return;
 
         gc2.setFill(Color.GREEN);
